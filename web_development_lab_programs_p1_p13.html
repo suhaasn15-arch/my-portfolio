@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Development Lab - Suhas N (2392608105)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 h-full flex flex-col md:flex-row overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-80 bg-slate-950 border-r border-slate-800 flex flex-col h-1/3 md:h-full z-20">
+        <!-- Student Header -->
+        <div class="p-4 border-b border-slate-800 bg-slate-900/50">
+            <h1 class="font-bold text-lg text-blue-400">Web Dev Lab (P1–P13)</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Student: <span class="text-slate-200 font-medium">Suhas N</span></p>
+            <p class="text-xs text-slate-400">USN: <span class="text-slate-200 font-mono">2392608105</span> | Sec: <span class="text-slate-200">A</span></p>
+        </div>
+
+        <!-- Programs List -->
+        <div id="program-list" class="flex-1 overflow-y-auto divide-y divide-slate-800/60">
+            <!-- Populated via JavaScript -->
+        </div>
+
+        <!-- Footer status -->
+        <div class="p-3 bg-slate-900/80 border-t border-slate-800 text-xs text-slate-400 flex justify-between items-center">
+            <span>Status: Complete</span>
+            <span class="text-emerald-400 font-semibold">● Ready</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-2/3 md:h-full bg-slate-900 overflow-hidden">
+        <!-- Top Toolbar -->
+        <header class="bg-slate-950 border-b border-slate-800 p-4 flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <span id="prog-badge" class="px-2.5 py-1 text-xs font-semibold bg-blue-500/20 text-blue-400 rounded-md border border-blue-500/30">P1</span>
+                <h2 id="prog-title" class="text-xl font-bold text-white inline-block ml-2">Terminal Navigation</h2>
+            </div>
+            
+            <!-- View Mode Switcher -->
+            <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
+                <button onclick="switchTab('description')" id="btn-description" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition bg-blue-600 text-white shadow">Description</button>
+                <button onclick="switchTab('code')" id="btn-code" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition text-slate-300 hover:text-white">Source Code</button>
+                <button onclick="switchTab('preview')" id="btn-preview" class="px-3.5 py-1.5 text-xs font-medium rounded-md transition text-slate-300 hover:text-white">Live Preview</button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Panel -->
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+            <!-- Tab 1: Description -->
+            <div id="tab-description" class="space-y-6 max-w-4xl mx-auto">
+                <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-6 shadow-xl">
+                    <h3 class="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Objective / Question</h3>
+                    <p id="desc-objective" class="text-slate-200 text-lg leading-relaxed"></p>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 rounded-xl p-6 shadow-xl">
+                    <h3 class="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Key Concepts & Implementation</h3>
+                    <p id="desc-concepts" class="text-slate-300 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- Tab 2: Code Viewer -->
+            <div id="tab-code" class="hidden h-full max-w-5xl mx-auto flex flex-col">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex-1 flex flex-col">
+                    <div class="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex justify-between items-center">
+                        <span id="code-filename" class="text-xs font-mono text-slate-400">script.js</span>
+                        <button onclick="copyCode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded transition border border-slate-700">Copy Code</button>
+                    </div>
+                    <pre class="p-4 text-sm font-mono text-emerald-400 overflow-x-auto flex-1 bg-slate-950/90"><code id="code-content"></code></pre>
+                </div>
+            </div>
+
+            <!-- Tab 3: Live Preview -->
+            <div id="tab-preview" class="hidden h-full max-w-6xl mx-auto flex flex-col">
+                <div class="bg-white text-slate-900 rounded-xl overflow-hidden shadow-2xl flex-1 border border-slate-700 flex flex-col">
+                    <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex items-center gap-2">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-400"></div>
+                        </div>
+                        <span class="text-xs text-slate-500 font-mono ml-2">http://localhost:3000/preview</span>
+                    </div>
+                    <div id="preview-container" class="flex-1 overflow-auto bg-slate-50 relative">
+                        <!-- Rendered interactive output goes here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Programs Dataset (P1 to P13)
+        const programs = [
+            {
+                id: "P1",
+                title: "Terminal Navigation",
+                module: "Module 1: Terminal & Git",
+                objective: "Terminal setup, directory creation, and basic navigation commands (cd, ls, mkdir, pwd).",
+                concepts: "Learned how to interact with the Unix/Linux command-line interface to organize project directories efficiently.",
+                code: `# Terminal setup and navigation commands
+mkdir web-dev-lab
+cd web-dev-lab
+pwd
+ls -la
+echo "Lab setup initialized successfully."`,
+                type: "terminal",
+                previewHtml: `
+                    <div class="p-6 font-mono text-sm bg-slate-900 text-emerald-400 h-full rounded-b-xl shadow-inner">
+                        <p class="text-slate-400"># Terminal Session - Suhas N (USN: 2392608105)</p>
+                        <p class="mt-2">$ mkdir web-dev-lab</p>
+                        <p>$ cd web-dev-lab</p>
+                        <p class="text-blue-400">$ pwd</p>
+                        <p>/home/suhas/projects/web-dev-lab</p>
+                        <p class="mt-2">$ ls -la</p>
+                        <p class="text-slate-300">total 12</p>
+                        <p class="text-slate-300">drwxr-xr-x 2 suhas suhas 4096 Nov 13 14:00 .</p>
+                        <p class="text-slate-300">drwxr-xr-x 5 suhas suhas 4096 Nov 13 14:00 ..</p>
+                        <p class="mt-4 text-emerald-300 animate-pulse">✓ Directory structure active and ready.</p>
+                    </div>
+                `
+            },
+            {
+                id: "P2",
+                title: "Portfolio Git Init",
+                module: "Module 1: Terminal & Git",
+                objective: "Initialize a local Git repository, configure user details, create a README, and make the first commit.",
+                concepts: "Understanding version control initialization, staging changes, and recording history commits.",
+                code: `git init
+git config user.name 'Suhas N'
+git config user.email 'suhas@example.com'
+echo '# Web Development Portfolio' > README.md
+git add README.md
+git commit -m 'Initial commit: add README'`,
+                type: "terminal",
+                previewHtml: `
+                    <div class="p-6 font-mono text-sm bg-slate-900 text-slate-200 h-full rounded-b-xl">
+                        <p class="text-amber-400">$ git init</p>
+                        <p class="text-slate-400">Initialized empty Git repository in /home/suhas/portfolio/.git/</p>
+                        <p class="mt-3 text-amber-400">$ git add README.md</p>
+                        <p class="mt-3 text-amber-400">$ git commit -m "Initial commit: add README"</p>
+                        <p class="text-emerald-400">[main (root-commit) a1b2c3d] Initial commit: add README</p>
+                        <p class="text-slate-400"> 1 file changed, 1 insertion(+)</p>
+                    </div>
+                `
+            },
+            {
+                id: "P3",
+                title: "Feature Branch Workflow",
+                module: "Module 1: Terminal & Git",
+                objective: "Create a feature branch, make code updates, commit changes, and merge back into the main branch.",
+                concepts: "Practicing Git branching strategies, collaborative feature development, and merge conflict prevention.",
+                code: `git checkout -b feature/bio-section
+# Created bio.html file content
+git add bio.html
+git commit -m 'Add semantic bio section'
+git checkout main
+git merge feature/bio-section`,
+                type: "terminal",
+                previewHtml: `
+                    <div class="p-6 font-mono text-sm bg-slate-900 text-slate-200 h-full rounded-b-xl">
+                        <p class="text-blue-400">$ git checkout -b feature/bio-section</p>
+                        <p class="text-slate-400">Switched to a new branch 'feature/bio-section'</p>
+                        <p class="mt-3 text-slate-300"># Edited bio.html ...</p>
+                        <p class="text-blue-400">$ git commit -am "Add semantic bio section"</p>
+                        <p class="text-emerald-400">[feature/bio-section 7f8e9d1] Add semantic bio section</p>
+                        <p class="mt-3 text-blue-400">$ git checkout main && git merge feature/bio-section</p>
+                        <p class="text-slate-400">Updating a1b2c3d..7f8e9d1 Fast-forward</p>
+                        <p class="text-emerald-400">✓ Successfully merged feature branch into main.</p>
+                    </div>
+                `
+            },
+            {
+                id: "P4",
+                title: "GitHub README & Tags",
+                module: "Module 1: Terminal & Git",
+                objective: "Push repository to GitHub, create a detailed professional README, and apply a semantic version tag (v1.0.0).",
+                concepts: "Remote repository linking, pushing branches upstream, and semantic release tagging.",
+                code: `git remote add origin https://github.com/suhaas/portfolio.git
+git push -u origin main
+git tag -a v1.0.0 -m 'Release version 1.0.0'
+git push origin v1.0.0`,
+                type: "terminal",
+                previewHtml: `
+                    <div class="p-6 font-mono text-sm bg-slate-900 text-slate-200 h-full rounded-b-xl">
+                        <p class="text-purple-400">$ git remote add origin https://github.com/suhaas/portfolio.git</p>
+                        <p class="text-purple-400">$ git push -u origin main</p>
+                        <p class="text-slate-400">Enumerating objects: 5, done.</p>
+                        <p class="text-slate-400">To https://github.com/suhaas/portfolio.git</p>
+                        <p class="text-emerald-400"> * [new branch]      main -> main</p>
+                        <p class="mt-3 text-purple-400">$ git tag -a v1.0.0 -m "Release version 1.0.0"</p>
+                        <p class="text-purple-400">$ git push origin v1.0.0</p>
+                        <p class="text-emerald-400">✓ Tag v1.0.0 successfully pushed to remote GitHub repository.</p>
+                    </div>
+                `
+            },
+            {
+                id: "P5",
+                title: "Semantic Bio Page",
+                module: "Module 2: HTML & CSS Foundations",
+                objective: "Build a clean, semantic personal bio page using foundational HTML5 tags (<header>, <main>, <section>, <article>, <footer>).",
+                concepts: "HTML5 semantic markup for accessibility, screen readers, and structured document hierarchy.",
+                code: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Suhas N - Biography</title>
+</head>
+<body>
+    <header>
+        <h1>SUHAS N</h1>
+        <p>Computer Science Engineering Student</p>
+    </header>
+    <main>
+        <section>
+            <h2>About Me</h2>
+            <article>
+                <p>Hello! I am Suhas N (USN: 2392608105), studying CSE and building modern web applications.</p>
+            </article>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 Suhas N. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>`,
+                type: "html",
+                previewHtml: `
+                    <div class="p-8 bg-white text-slate-800 h-full rounded-b-xl">
+                        <header class="border-b pb-4 mb-6">
+                            <h1 class="text-3xl font-black text-blue-600">SUHAS N</h1>
+                            <p class="text-slate-500 font-medium">Computer Science Engineering Student</p>
+                        </header>
+                        <main class="space-y-6">
+                            <section>
+                                <h2 class="text-xl font-bold text-slate-700 mb-2">About Me</h2>
+                                <article class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                    <p class="text-slate-600">Hello! I am Suhas N (USN: <span class="font-mono font-semibold">2392608105</span>), studying CSE and building modern web applications.</p>
+                                </article>
+                            </section>
+                        </main>
+                        <footer class="mt-8 pt-4 border-t text-sm text-slate-400">
+                            <p>&copy; 2026 Suhas N. All Rights Reserved.</p>
+                        </footer>
+                    </div>
+                `
+            },
+            {
+                id: "P6",
+                title: "Full Portfolio Page Structure",
+                module: "Module 2: HTML & CSS Foundations",
+                objective: "Create a comprehensive multi-section portfolio webpage layout including navigation, hero introduction, projects, skills, and contact form.",
+                concepts: "Structuring complex layouts with semantic containers, anchor links, and form elements.",
+                code: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Portfolio</title></head>
+<body>
+    <header><nav><a href="#about">About</a> | <a href="#projects">Projects</a> | <a href="#contact">Contact</a></nav></header>
+    <main>
+        <section id="hero"><h1>Hi, I'm Suhas N</h1><p>Aspiring Software Engineer</p></section>
+        <section id="contact">
+            <h2>Contact Me</h2>
+            <form><input type="text" placeholder="Name"><br><button type="submit">Send</button></form>
+        </section>
+    </main>
+</body>
+</html>`,
+                type: "html",
+                previewHtml: `
+                    <div class="bg-white text-slate-800 h-full rounded-b-xl flex flex-col">
+                        <header class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                            <span class="font-bold">Suhas N Portfolio</span>
+                            <nav class="space-x-4 text-sm text-slate-300">
+                                <span class="hover:text-white cursor-pointer">About</span>
+                                <span class="hover:text-white cursor-pointer">Projects</span>
+                                <span class="hover:text-white cursor-pointer">Contact</span>
+                            </nav>
+                        </header>
+                        <main class="p-8 flex-1 space-y-6">
+                            <div class="bg-blue-50 border border-blue-200 p-6 rounded-xl">
+                                <h1 class="text-2xl font-bold text-blue-900">Hi, I'm Suhas N</h1>
+                                <p class="text-blue-700 mt-1">Aspiring Software Engineer & Web Developer</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 p-6 rounded-xl">
+                                <h2 class="font-bold text-slate-800 mb-3">Quick Contact Form</h2>
+                                <div class="space-y-3 max-w-md">
+                                    <input type="text" placeholder="Your Name" class="w-full px-3 py-2 border rounded-lg text-sm bg-white" readonly value="Suhas N">
+                                    <input type="email" placeholder="Your Email" class="w-full px-3 py-2 border rounded-lg text-sm bg-white" readonly value="suhas@college.edu">
+                                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Send Message</button>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                `
+            },
+            {
+                id: "P7",
+                title: "Design Tokens & Typography",
+                module: "Module 2: HTML & CSS Foundations",
+                objective: "Define CSS custom properties (design tokens) for color palettes, spacing, and font families to establish a cohesive typography system.",
+                concepts: "Using CSS variables (:root) to maintain consistent branding, color systems, and scalable typography.",
+                code: `:root {
+    --primary: #2563eb;
+    --text: #1f2937;
+    --bg: #f9fafb;
+    --spacing: 1rem;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    padding: calc(var(--spacing) * 2);
+}
+h1 { color: var(--primary); font-size: 2.25rem; }`,
+                type: "html",
+                previewHtml: `
+                    <div class="p-8 bg-slate-50 h-full rounded-b-xl flex flex-col justify-center items-center text-center">
+                        <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200 max-w-lg w-full">
+                            <h1 class="text-3xl font-extrabold text-blue-600 mb-2">Design Tokens System</h1>
+                            <p class="text-slate-600 mb-6">Controlled via CSS custom properties (--primary, --text, --bg) for uniform UI styling.</p>
+                            <div class="flex justify-center gap-3">
+                                <span class="w-8 h-8 rounded-full bg-blue-600 shadow-md"></span>
+                                <span class="w-8 h-8 rounded-full bg-slate-800 shadow-md"></span>
+                                <span class="w-8 h-8 rounded-full bg-emerald-500 shadow-md"></span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "P8",
+                title: "Sticky Navbar & Card Overlay",
+                module: "Module 2: HTML & CSS Foundations",
+                objective: "Implement a sticky navigation bar using position: sticky and an image card with an absolute-positioned text overlay.",
+                concepts: "CSS positioning mechanics (sticky vs absolute vs relative) for advanced UI layering.",
+                code: `nav {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.card {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 1rem;
+}`,
+                type: "html",
+                previewHtml: `
+                    <div class="h-full rounded-b-xl flex flex-col bg-slate-100 overflow-y-auto">
+                        <div class="sticky top-0 bg-white border-b p-4 shadow-sm z-10 flex justify-between items-center">
+                            <span class="font-bold text-slate-800">Sticky Navbar Header</span>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">position: sticky</span>
+                        </div>
+                        <div class="p-8 flex justify-center items-center flex-1">
+                            <div class="relative w-80 h-48 bg-slate-800 rounded-xl overflow-hidden shadow-xl">
+                                <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-indigo-600 opacity-80"></div>
+                                <div class="absolute bottom-0 left-0 right-0 p-4 bg-slate-950/80 backdrop-blur text-white">
+                                    <h4 class="font-bold">Project Card Overlay</h4>
+                                    <p class="text-xs text-slate-300">Absolute positioning demo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "P9",
+                title: "Responsive Flexbox Navbar & Card Grid",
+                module: "Module 2: HTML & CSS Foundations",
+                objective: "Build a responsive navigation header and a multi-item card grid using CSS Flexbox properties (flex-wrap, justify-content).",
+                concepts: "Flexible box layout module for responsive alignment and automatic wrapping across devices.",
+                code: `.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    color: white;
+    padding: 1rem 2rem;
+}
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 2rem;
+}
+.card {
+    flex: 1 1 250px;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 6px;
+}`,
+                type: "html",
+                previewHtml: `
+                    <div class="bg-white h-full rounded-b-xl flex flex-col">
+                        <div class="flex justify-between items-center bg-slate-900 text-white px-6 py-4">
+                            <h2 class="font-bold">Suhas N</h2>
+                            <div class="flex gap-4 text-sm text-slate-300">
+                                <span>Home</span><span>Projects</span><span>Contact</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 p-6 bg-slate-50 flex-1">
+                            <div class="flex-1 min-w-[200px] bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
+                                <h3 class="font-bold text-slate-800">Project Alpha</h3>
+                                <p class="text-sm text-slate-500 mt-1">Flexbox wrapped item 1.</p>
+                            </div>
+                            <div class="flex-1 min-w-[200px] bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
+                                <h3 class="font-bold text-slate-800">Project Beta</h3>
+                                <p class="text-sm text-slate-500 mt-1">Flexbox wrapped item 2.</p>
+                            </div>
+                            <div class="flex-1 min-w-[200px] bg-white border border-slate-200 p-4 rounded-lg shadow-sm">
+                                <h3 class="font-bold text-slate-800">Project Gamma</h3>
+                                <p class="text-sm text-slate-500 mt-1">Flexbox wrapped item 3.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "P10",
+                title: "Advanced Flexbox Header & Footer",
+                module: "Module 3: CSS Layout Systems",
+                objective: "Design an advanced header and footer layout using Flexbox alignment, space-between distribution, and vertical centering.",
+                concepts: "Mastering flex-direction, align-items, justify-content, and space distribution for professional page frames.",
+                code: `header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f172a;
+    color: white;
+    padding: 1.5rem 3rem;
+}
+footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #334155;
+    color: #cbd5e1;
+    padding: 2rem;
+}`,
+                type: "html",
+                previewHtml: `
+                    <div class="h-full rounded-b-xl flex flex-col justify-between bg-slate-100">
+                        <header class="flex justify-between items-center bg-slate-900 text-white px-8 py-4 shadow">
+                            <div>
+                                <h1 class="font-bold text-lg">Suhas N</h1>
+                                <p class="text-xs text-slate-400">CSE Undergrad</p>
+                            </div>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30">Header Flexbox</span>
+                        </header>
+                        <div class="p-8 text-center text-slate-500">
+                            <p class="text-sm">Main body content area situated between advanced flex header and footer.</p>
+                        </div>
+                        <footer class="flex justify-around items-center bg-slate-800 text-slate-300 p-6 text-sm">
+                            <p>&copy; 2026 Suhas N (2392608105)</p>
+                            <div class="flex gap-4">
+                                <span class="hover:text-white cursor-pointer">GitHub</span>
+                                <span class="hover:text-white cursor-pointer">LinkedIn</span>
+                            </div>
+                        </footer>
+                    </div>
+                `
+            },
+            {
+                id: "P11",
+                title: "Newspaper Three-Column CSS Grid",
+                module: "Module 3: CSS Layout Systems",
+                objective: "Create a classic newspaper-style multi-column layout using CSS Grid (grid-template-columns: 2fr 1fr 1fr).",
+                concepts: "Fractional units (fr) and explicit column tracks in CSS Grid for editorial layouts.",
+                code: `.news-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+}
+.main-article { background: #f8fafc; padding: 1.5rem; border-left: 4px solid #2563eb; }
+.sidebar-article { background: #f1f5f9; padding: 1.5rem; }`,
+                type: "html",
+                previewHtml: `
+                    <div class="p-6 bg-white h-full rounded-b-xl overflow-y-auto">
+                        <h3 class="font-bold text-slate-800 mb-4 text-center">Newspaper Editorial Grid (2fr 1fr 1fr)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="md:col-span-2 bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-blue-900 mb-1">Main Breaking News Article</h4>
+                                <p class="text-xs text-blue-700 leading-relaxed">Detailed coverage of the latest web development breakthroughs and responsive design patterns in modern engineering.</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-slate-800 mb-1">Sidebar Update 1</h4>
+                                <p class="text-xs text-slate-600">Quick summary of secondary news and announcements.</p>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-slate-800 mb-1">Sidebar Update 2</h4>
+                                <p class="text-xs text-slate-600">Upcoming events and important deadlines.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "P12",
+                title: "Portfolio Projects CSS Grid",
+                module: "Module 3: CSS Layout Systems",
+                objective: "Build a responsive portfolio projects gallery using CSS Grid with explicit row/column tracks and card spans.",
+                concepts: "Auto-fit columns, minmax sizing, and grid item spanning (grid-column: span 2).",
+                code: `.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+}
+.featured {
+    grid-column: span 2;
+    background: #eff6ff;
+}`,
+                type: "html",
+                previewHtml: `
+                    <div class="p-6 bg-slate-50 h-full rounded-b-xl overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2 bg-blue-600 text-white p-6 rounded-xl shadow-md">
+                                <span class="text-xs bg-white/20 px-2 py-1 rounded font-medium">Featured (grid-column: span 2)</span>
+                                <h3 class="text-xl font-bold mt-2">E-Commerce Web Platform</h3>
+                                <p class="text-xs text-blue-100 mt-1">Full-stack web application built with modern CSS Grid architecture.</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                                <h3 class="font-bold text-slate-800">Weather Dashboard</h3>
+                                <p class="text-xs text-slate-500 mt-1">Interactive API weather app.</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                                <h3 class="font-bold text-slate-800">Task Manager</h3>
+                                <p class="text-xs text-slate-500 mt-1">Productivity tracking app.</p>
+                            </div>
+                            <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+                                <h3 class="font-bold text-slate-800">Portfolio V1</h3>
+                                <p class="text-xs text-slate-500 mt-1">Personal landing page.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: "P13",
+                title: "Hybrid Layout with Grid & Flexbox",
+                module: "Module 3: CSS Layout Systems",
+                objective: "Demonstrate a hybrid layout combining CSS Grid for macro-level page structuring and Flexbox for micro-level component alignment.",
+                concepts: "Combining powerful CSS Grid macro layout (sidebar + content) with Flexbox micro layout (toolbars, cards).",
+                code: `.page-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+.sidebar { background: #0f172a; color: white; padding: 2rem; }
+.content { padding: 2rem; background: #f8fafc; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; }`,
+                type: "html",
+                previewHtml: `
+                    <div class="h-full rounded-b-xl flex bg-white overflow-hidden border">
+                        <div class="w-56 bg-slate-900 text-white p-6 flex flex-col justify-between hidden md:flex">
+                            <div>
+                                <h3 class="font-bold text-blue-400">Dashboard</h3>
+                                <p class="text-xs text-slate-400 mt-1">Macro: CSS Grid</p>
+                                <ul class="mt-6 space-y-2 text-sm text-slate-300">
+                                    <li class="bg-blue-600/30 text-blue-300 px-3 py-1.5 rounded">Home</li>
+                                    <li>Analytics</li>
+                                    <li>Settings</li>
+                                </ul>
+                            </div>
+                            <p class="text-xs text-slate-500">Suhas N</p>
+                        </div>
+                        <div class="flex-1 p-6 bg-slate-50 flex flex-col overflow-y-auto">
+                            <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
+                                <div>
+                                    <h2 class="font-bold text-slate-800">Welcome, Suhas N</h2>
+                                    <p class="text-xs text-slate-500">USN: 2392608105</p>
+                                </div>
+                                <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium">Micro: Flexbox Toolbar</span>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 p-6 rounded-xl text-blue-900">
+                                <h4 class="font-bold">Hybrid Architecture Explanation</h4>
+                                <p class="text-xs text-blue-700 mt-1">CSS Grid governs the outer sidebar/content split, while Flexbox aligns internal toolbars and button clusters.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentProgramId = "P1";
+        let currentTab = "description";
+
+        // Initialize Application UI
+        function initApp() {
+            renderProgramList();
+            loadProgram(currentProgramId);
+        }
+
+        // Render Sidebar Program List
+        function renderProgramList() {
+            const listEl = document.getElementById("program-list");
+            listEl.innerHTML = "";
+            
+            programs.forEach(prog => {
+                const btn = document.createElement("button");
+                btn.className = `w-full text-left p-3.5 transition flex items-center justify-between border-l-4 ${prog.id === currentProgramId ? 'bg-slate-900 border-blue-500 text-white font-semibold' : 'border-transparent text-slate-400 hover:bg-slate-900/60 hover:text-slate-200'}`;
+                btn.onclick = () => loadProgram(prog.id);
+                btn.innerHTML = `
+                    <div>
+                        <span class="text-xs font-mono text-blue-400">${prog.id}</span>
+                        <p class="text-sm truncate mt-0.5">${prog.title}</p>
+                    </div>
+                    <span class="text-xs text-slate-600">→</span>
+                `;
+                listEl.appendChild(btn);
+            });
+        }
+
+        // Load Selected Program Data
+        function loadProgram(id) {
+            currentProgramId = id;
+            const prog = programs.find(p => p.id === id);
+            
+            // Update Header
+            document.getElementById("prog-badge").innerText = prog.id;
+            document.getElementById("prog-title").innerText = prog.title;
+            
+            // Update Description Tab
+            document.getElementById("desc-objective").innerText = prog.objective;
+            document.getElementById("desc-concepts").innerText = prog.concepts;
+            
+            // Update Code Tab
+            document.getElementById("code-filename").innerText = `${prog.id.toLowerCase()}_solution.${prog.type === 'terminal' ? 'sh' : 'html'}`;
+            document.getElementById("code-content").innerText = prog.code;
+            
+            // Update Preview Tab
+            document.getElementById("preview-container").innerHTML = prog.previewHtml;
+            
+            renderProgramList();
+        }
+
+        // Switch Active Tab (Description, Code, Preview)
+        function switchTab(tab) {
+            currentTab = tab;
+            ['description', 'code', 'preview'].forEach(t => {
+                const tabEl = document.getElementById(`tab-${t}`);
+                const btnEl = document.getElementById(`btn-${t}`);
+                if (t === tab) {
+                    tabEl.classList.remove("hidden");
+                    btnEl.className = "px-3.5 py-1.5 text-xs font-medium rounded-md transition bg-blue-600 text-white shadow";
+                } else {
+                    tabEl.classList.add("hidden");
+                    btnEl.className = "px-3.5 py-1.5 text-xs font-medium rounded-md transition text-slate-300 hover:text-white";
+                }
+            });
+        }
+
+        // Copy Code Function
+        function copyCode() {
+            const prog = programs.find(p => p.id === currentProgramId);
+            const textarea = document.createElement('textarea');
+            textarea.value = prog.code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            // Toast feedback
+            const btn = document.querySelector('button[onclick="copyCode()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Copied!";
+            btn.className = "text-xs bg-emerald-600 text-white px-3 py-1 rounded transition";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.className = "text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1 rounded transition border border-slate-700";
+            }, 1500);
+        }
+
+        // Run on load
+        window.onload = initApp;
+    </script>
+</body>
+</html>
